@@ -1,7 +1,10 @@
 ---
 name: "[FEATURE]: Feature request \U0001F914"
 about: "Suggest ideas you wish webpack-cli had \U0001F680"
-labels: "Feature Request"
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 **Is your feature request related to a problem? Please describe.**

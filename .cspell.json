@@ -64,6 +64,7 @@
     "nwjs",
     "Oikawa",
     "pathinfo",
+    "plopfile",
     "pnpm",
     "postcss",
     "prebuild",
@@ -101,7 +102,9 @@
     "Yuuji",
     "Zangetsu",
     "Zenitsu",
-    "quickstart"
+    "quickstart",
+    "pinia",
+    "watchpack"
   ],
   "dictionaries": ["npm", "software-terms"],
   "ignorePaths": [

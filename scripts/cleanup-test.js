@@ -1,5 +1,4 @@
-// eslint-disable-next-line node/no-unpublished-require
-const rimraf = require("rimraf");
+const fs = require("fs");
 const { join } = require("path");
 const collectTestFolders = require("./utils");
 
@@ -22,7 +21,9 @@ const folderStrategy = (stats, file) => {
 
 const cleanupOutputDirs = () => {
   for (const outputFolder of collectTestFolders(folderStrategy)) {
-    outputDirectories.forEach((dir) => rimraf.sync(join(outputFolder, dir)));
+    outputDirectories.forEach((dir) =>
+      fs.rmSync(join(outputFolder, dir), { recursive: true, force: true }),
+    );
   }
 };
 

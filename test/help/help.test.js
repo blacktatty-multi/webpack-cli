@@ -75,20 +75,8 @@ describe("help", () => {
 
   const commands = [
     {
-      name: "init",
-      alias: ["create", "new", "c", "n"],
-    },
-    {
       name: "info",
       alias: "i",
-    },
-    {
-      name: "loader",
-      alias: "l",
-    },
-    {
-      name: "plugin",
-      alias: "p",
     },
     {
       name: "configtest",
@@ -249,6 +237,14 @@ describe("help", () => {
 
   it('should show help information using the "help --cache-type" option', async () => {
     const { exitCode, stderr, stdout } = await run(__dirname, ["help", "--cache-type"]);
+
+    expect(exitCode).toBe(0);
+    expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");
+    expect(normalizeStdout(stdout)).toMatchSnapshot("stdout");
+  });
+
+  it('should show help information using the "help --output-chunk-format" option', async () => {
+    const { exitCode, stderr, stdout } = await run(__dirname, ["help", "--output-chunk-format"]);
 
     expect(exitCode).toBe(0);
     expect(normalizeStderr(stderr)).toMatchSnapshot("stderr");

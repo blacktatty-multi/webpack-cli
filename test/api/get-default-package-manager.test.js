@@ -1,6 +1,5 @@
 const fs = require("fs");
 const path = require("path");
-// eslint-disable-next-line node/no-unpublished-require
 const CLI = require("../../packages/webpack-cli/lib/webpack-cli");
 
 const syncMock = jest.fn(() => {
@@ -102,6 +101,7 @@ describe("getPackageManager", () => {
   });
 
   it("should throw error if no package manager is found", () => {
+    cwdSpy.mockReturnValue(noLockPath);
     syncMock.mockImplementation(() => {
       throw new Error();
     });

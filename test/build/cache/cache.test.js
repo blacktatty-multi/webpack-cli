@@ -1,14 +1,14 @@
 "use strict";
 
+const fs = require("fs");
 const path = require("path");
-// eslint-disable-next-line node/no-unpublished-require
-const rimraf = require("rimraf");
 const { run } = require("../../utils/test-utils");
 
 describe("cache", () => {
   it("should work", async () => {
-    rimraf.sync(
+    fs.rmSync(
       path.join(__dirname, "../../../node_modules/.cache/webpack/cache-test-default-development"),
+      { recursive: true, force: true },
     );
 
     let { exitCode, stderr, stdout } = await run(__dirname, ["-c", "./webpack.config.js"]);
@@ -30,11 +30,19 @@ describe("cache", () => {
   });
 
   it("should work in multi compiler mode", async () => {
-    rimraf.sync(
-      path.join(__dirname, "../../../node_modules/.cache/webpack/cache-test-first-development"),
+    fs.rmSync(
+      path.join(
+        __dirname,
+        "../../../node_modules/.cache/webpack/cache-test-first-development__compiler1__",
+      ),
+      { recursive: true, force: true },
     );
-    rimraf.sync(
-      path.join(__dirname, "../../../node_modules/.cache/webpack/cache-test-second-development"),
+    fs.rmSync(
+      path.join(
+        __dirname,
+        "../../../node_modules/.cache/webpack/cache-test-second-development__compiler2__",
+      ),
+      { recursive: true, force: true },
     );
 
     let { exitCode, stderr, stdout } = await run(__dirname, ["-c", "./multi.config.js"]);
@@ -56,8 +64,12 @@ describe("cache", () => {
   });
 
   it("should work in multi compiler mode with the `--config-name` argument", async () => {
-    rimraf.sync(
-      path.join(__dirname, "../../../node_modules/.cache/webpack/cache-test-third-development"),
+    fs.rmSync(
+      path.join(
+        __dirname,
+        "../../../node_modules/.cache/webpack/cache-test-third-development__compiler1__",
+      ),
+      { recursive: true, force: true },
     );
 
     let { exitCode, stderr, stdout } = await run(__dirname, [
@@ -93,8 +105,9 @@ describe("cache", () => {
   });
 
   it("should work with the `--merge` argument", async () => {
-    rimraf.sync(
+    fs.rmSync(
       path.join(__dirname, "../../../node_modules/.cache/webpack/cache-test-fourth-development"),
+      { recursive: true, force: true },
     );
 
     let { exitCode, stderr, stdout } = await run(__dirname, [
@@ -132,8 +145,9 @@ describe("cache", () => {
   });
 
   it("should work with the `--config-name` and `--merge` argument", async () => {
-    rimraf.sync(
+    fs.rmSync(
       path.join(__dirname, "../../../node_modules/.cache/webpack/cache-test-fifth-development"),
+      { recursive: true, force: true },
     );
 
     let { exitCode, stderr, stdout } = await run(__dirname, [
@@ -179,11 +193,12 @@ describe("cache", () => {
   });
 
   it("should work with autoloading configuration", async () => {
-    rimraf.sync(
+    fs.rmSync(
       path.join(
         __dirname,
         "../../../node_modules/.cache/webpack/cache-test-autoloading-development",
       ),
+      { recursive: true, force: true },
     );
 
     let { exitCode, stderr, stdout } = await run(__dirname, ["--name", "cache-test-autoloading"]);

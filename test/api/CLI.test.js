@@ -1,11 +1,16 @@
-// eslint-disable-next-line node/no-unpublished-require
 const CLI = require("../../packages/webpack-cli/lib/webpack-cli");
 
 describe("CLI API", () => {
   let cli;
 
   beforeEach(() => {
+    jest.spyOn(console, "error").mockImplementation(() => {});
+
     cli = new CLI();
+  });
+
+  afterAll(() => {
+    console.error.mockRestore();
   });
 
   describe("makeCommand", () => {
@@ -1704,11 +1709,9 @@ describe("CLI API", () => {
       consoleSpy = jest.spyOn(global.console, "log");
       exitSpy = jest.spyOn(process, "exit").mockImplementation(() => {});
 
-      cli.program.option("--color [value]", "any color", "blue");
-
       await new Promise((resolve, reject) => {
         try {
-          cli.run(["help", "--color"], { from: "user" });
+          cli.run(["help", "--mode"], { from: "user" });
           resolve();
         } catch (error) {
           reject(error);

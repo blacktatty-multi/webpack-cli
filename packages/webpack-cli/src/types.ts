@@ -1,9 +1,9 @@
 import type {
   EntryOptions,
   Stats,
+  MultiStats,
   Configuration,
   WebpackError,
-  StatsOptions,
   WebpackOptionsNormalized,
   Compiler,
   MultiCompiler,
@@ -16,13 +16,13 @@ import type webpack from "webpack";
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore extraneous import is intended
-// eslint-disable-next-line node/no-extraneous-import
+// eslint-disable-next-line n/no-extraneous-import
 import type { ClientConfiguration, Configuration as DevServerConfig } from "webpack-dev-server";
 
 import { type Colorette } from "colorette";
 import { type Command, type CommandOptions, type Option, type ParseOptions } from "commander";
 import { type prepare } from "rechoir";
-import { type stringifyStream } from "@discoveryjs/json-ext";
+import { type stringifyChunked } from "@discoveryjs/json-ext";
 
 /**
  * Webpack CLI
@@ -70,7 +70,7 @@ interface IWebpackCLI {
   isValidationError(error: Error): error is WebpackError;
   createCompiler(
     options: Partial<WebpackDevServerOptions>,
-    callback?: Callback<[Error | undefined, WebpackCLIStats | undefined]>,
+    callback?: Callback<[Error | undefined, Stats | MultiStats | undefined]>,
   ): Promise<WebpackCompiler>;
   needWatchStdin(compiler: Compiler | MultiCompiler): boolean;
   runWebpack(options: WebpackRunOptions, isWatchCommand: boolean): Promise<void>;
@@ -102,10 +102,6 @@ interface WebpackCLICommand extends Command {
   pkg: string | undefined;
   forHelp: boolean | undefined;
   _args: WebpackCLICommandOption[];
-}
-
-interface WebpackCLIStats extends Stats {
-  presetToOptions?: (item: string | boolean) => StatsOptions;
 }
 
 type WebpackCLIMainOption = Pick<
@@ -141,7 +137,7 @@ interface WebpackCLIBuiltInFlag {
   negative?: boolean;
   multiple?: boolean;
   valueName?: string;
-  description: string;
+  description?: string;
   describe?: string;
   negatedDescription?: string;
   defaultValue?: string;
@@ -168,7 +164,7 @@ type WebpackDevServerOptions = DevServerConfig &
   WebpackOptionsNormalized &
   FileCacheOptions &
   Argv & {
-    nodeEnv?: "string";
+    nodeEnv?: string;
     watchOptionsStdin?: boolean;
     progress?: boolean | "profile" | undefined;
     analyze?: boolean;
@@ -189,8 +185,10 @@ type Callback<T extends unknown[]> = (...args: T) => void;
  * Webpack
  */
 type WebpackConfiguration = Configuration;
-type ConfigOptions = PotentialPromise<WebpackConfiguration | CallableOption>;
-type CallableOption = (env: Env | undefined, argv: Argv) => WebpackConfiguration;
+type LoadableWebpackConfiguration = PotentialPromise<
+  WebpackConfiguration | CallableWebpackConfiguration
+>;
+type CallableWebpackConfiguration = (env: Env | undefined, argv: Argv) => WebpackConfiguration;
 type WebpackCompiler = Compiler | MultiCompiler;
 
 type FlagType = boolean | "enum" | "string" | "path" | "number" | "boolean" | "RegExp" | "reset";
@@ -205,7 +203,7 @@ type FileSystemCacheOptions = WebpackConfiguration & {
   cache: FileCacheOptions & { defaultConfig: string[] };
 };
 
-type ProcessedArguments = Record<string, BasicPrimitive | RegExp | (BasicPrimitive | RegExp)[]>;
+type ProcessedArguments = Record<string, (BasicPrimitive | RegExp)[]>;
 
 type CommandAction = Parameters<WebpackCLICommand["action"]>[0];
 
@@ -225,12 +223,6 @@ interface WebpackRunOptions extends WebpackOptionsNormalized {
 type PackageManager = "pnpm" | "yarn" | "npm";
 interface PackageInstallOptions {
   preMessage?: () => void;
-}
-interface BasicPackageJsonContent {
-  name: string;
-  version: string;
-  description: string;
-  license: string;
 }
 
 /**
@@ -289,7 +281,7 @@ interface Rechoir {
 }
 
 interface JsonExt {
-  stringifyStream: typeof stringifyStream;
+  stringifyChunked: typeof stringifyChunked;
 }
 
 interface RechoirError extends Error {
@@ -309,7 +301,6 @@ export {
   WebpackCLIBuiltInOption,
   WebpackCLIBuiltInFlag,
   WebpackCLIColors,
-  WebpackCLIStats,
   WebpackCLIConfig,
   WebpackCLIExternalCommandInfo,
   WebpackCLIOptions,
@@ -324,14 +315,13 @@ export {
   Argv,
   Argument,
   BasicPrimitive,
-  BasicPackageJsonContent,
-  CallableOption,
+  CallableWebpackConfiguration,
   Callback,
   CLIPluginOptions,
   CommandAction,
   CommanderOption,
   CommandOptions,
-  ConfigOptions,
+  LoadableWebpackConfiguration,
   DynamicImport,
   FileSystemCacheOptions,
   FlagConfig,

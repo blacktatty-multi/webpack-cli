@@ -1,14 +1,9 @@
 module.exports = {
   root: true,
   reportUnusedDisableDirectives: true,
-  extends: ["eslint:recommended", "plugin:node/recommended", "prettier"],
+  extends: ["eslint:recommended", "plugin:n/recommended", "prettier"],
   parserOptions: { ecmaVersion: 2018, sourceType: "script" },
-  plugins: ["node"],
-  settings: {
-    node: {
-      allowModules: ["@webpack-cli/generators"],
-    },
-  },
+  plugins: ["n"],
   env: {
     node: true,
     es6: true,
@@ -16,6 +11,7 @@ module.exports = {
   },
   rules: {
     "no-process-exit": "off",
+    "n/no-process-exit": "off",
     "no-template-curly-in-string": "error",
     "no-caller": "error",
     "no-extra-bind": "error",
@@ -26,7 +22,7 @@ module.exports = {
   overrides: [
     {
       settings: {
-        node: {
+        n: {
           tryExtensions: [".ts", ".tsx", ".js", ".jsx", ".json"],
         },
       },
@@ -39,7 +35,27 @@ module.exports = {
       parser: "@typescript-eslint/parser",
       plugins: ["@typescript-eslint"],
       rules: {
-        "node/no-unsupported-features/es-syntax": "off",
+        "@typescript-eslint/no-unused-vars": [
+          "error",
+          {
+            args: "all",
+            argsIgnorePattern: "^_",
+            caughtErrors: "all",
+            caughtErrorsIgnorePattern: "^_",
+            destructuredArrayIgnorePattern: "^_",
+            varsIgnorePattern: "^_",
+            ignoreRestSiblings: true,
+          },
+        ],
+        "n/no-unsupported-features/es-syntax": "off",
+        "n/no-process-exit": "off",
+        "@typescript-eslint/no-require-imports": "off",
+      },
+    },
+    {
+      files: ["**/packages/create-webpack-app/**/*.js"],
+      parserOptions: {
+        sourceType: "module",
       },
     },
   ],
